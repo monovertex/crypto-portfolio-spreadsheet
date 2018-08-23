@@ -1,0 +1,7 @@
+*.sublime-*
+node_modules
+dist
+.clasp.json
+yarn-error.log
+coverage
+src/env-constants.js

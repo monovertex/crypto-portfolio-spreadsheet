@@ -1,0 +1,14 @@
+{
+    "presets": [
+        "google-apps-script",
+        ["env", {
+            "targets": {
+                "firefox": "1"
+            }
+        }]
+    ],
+    "plugins": [
+        "transform-decorators-legacy",
+        ["transform-class-properties", { "spec": true }]
+    ]
+}
