@@ -1,12 +1,10 @@
 import { isUndefined } from 'lodash';
-import { FIAT_CURRENCIES, SHEET_CONFIGURATION } from 'src/constants';
+import { FIAT_CURRENCIES } from 'src/constants';
 import { ServiceAbstract } from 'src/services/abstract';
 import { ServiceBNC } from 'src/services/exchange-rate-providers/bnc';
 import { ServiceCryptoCompare } from 'src/services/exchange-rate-providers/crypto-compare';
 import { ServiceForeignExchange } from 'src/services/exchange-rate-providers/foreign-exchange';
 import { ServiceExchangeRateTempCache } from 'src/services/exchange-rate-temp-cache';
-import { ServiceExchangeRatePersistentCache } from 'src/services/exchange-rate-persistent-cache';
-import { Sheet } from 'src/entities/sheet';
 
 const PROVIDERS = [ServiceCryptoCompare, ServiceBNC];
 const FIAT_PROVIDERS = [ServiceForeignExchange];
@@ -18,9 +16,7 @@ export class ServiceExchangeRate extends ServiceAbstract {
     constructor() {
         super(...arguments);
         this._tempCache = new ServiceExchangeRateTempCache();
-        this._persistentCache = new ServiceExchangeRatePersistentCache();
         this._instantiateProviders();
-        this._retrieveBaseCurrencies();
     }
 
     getExchangeRate(fromCurrency, toCurrency, date = new Date()) {
@@ -44,36 +40,6 @@ export class ServiceExchangeRate extends ServiceAbstract {
     _writeCachedValue(symbol, timestamp, value) {
         const normalizedValue = isUndefined(value) ? 0 : value;
         this._tempCache.writeValue(symbol, timestamp, normalizedValue);
-        this._persistentCache.writeValue(symbol, timestamp, normalizedValue);
-    }
-
-    getExchangeRateForBases(fromCurrency, date) {
-        const cryptoBaseRate = this.getExchangeRate(fromCurrency, this._cryptoBase, date);
-
-        let fiatCoreBaseRate = this.getExchangeRate(fromCurrency, this._fiatCoreBase, date);
-        if (!fiatCoreBaseRate && cryptoBaseRate) {
-            fiatCoreBaseRate = cryptoBaseRate * this.getExchangeRate(this._cryptoBase, this._fiatCoreBase, date);
-        }
-
-        let fiatBaseRate;
-        if (fromCurrency === this._fiatBase) {
-            fiatBaseRate = 1;
-        } else if (fiatCoreBaseRate) {
-            fiatBaseRate = fiatCoreBaseRate * this.getExchangeRate(this._fiatCoreBase, this._fiatBase, date);
-        }
-
-        const timestamp = this._convertToTimestamp(date);
-        const ratesToCache = [
-            [this._convertToSymbol(fromCurrency, this._cryptoBase), timestamp, cryptoBaseRate],
-            [this._convertToSymbol(fromCurrency, this._fiatCoreBase), timestamp, fiatCoreBaseRate],
-            [this._convertToSymbol(fromCurrency, this._fiatBase), timestamp, fiatBaseRate],
-        ];
-
-        for (const cacheData of ratesToCache) {
-            this._writeCachedValue(...cacheData);
-        }
-
-        return { cryptoBaseRate, fiatCoreBaseRate, fiatBaseRate };
     }
 
     getExchangeRateMulti(pairs) {
@@ -113,12 +79,5 @@ export class ServiceExchangeRate extends ServiceAbstract {
             const exchangeRate = provider.getExchangeRate(fromCurrency, toCurrency, date);
             if (exchangeRate) { return exchangeRate; }
         }
-    }
-
-    _retrieveBaseCurrencies() {
-        const dashboardSheet = new Sheet(SHEET_CONFIGURATION);
-        this._fiatBase = dashboardSheet.getCellValue(4, 2);
-        this._fiatCoreBase = dashboardSheet.getCellValue(6, 2);
-        this._cryptoBase = dashboardSheet.getCellValue(5, 2);
     }
 }
