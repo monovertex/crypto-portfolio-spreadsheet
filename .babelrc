@@ -1,11 +1,6 @@
 {
     "presets": [
-        "google-apps-script",
-        ["env", {
-            "targets": {
-                "firefox": "1"
-            }
-        }]
+        ["env", { "targets": "defaults" }]
     ],
     "plugins": [
         "transform-decorators-legacy",

@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@google/clasp": "^1.4.1",
+    "@google/clasp": "^2.3.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.6",
