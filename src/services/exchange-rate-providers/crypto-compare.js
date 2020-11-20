@@ -39,8 +39,8 @@ export class ServiceCryptoCompare extends ProviderAbstract {
     _normalizeCurrency() {
         const normalizedSymbol = super._normalizeCurrency(...arguments);
         if (normalizedSymbol === 'NET') { return 'NET*'; }
-        if (normalizedSymbol === 'NIM') { return 'NET*'; }
         if (normalizedSymbol === 'IOTA') { return 'IOT'; }
+        if (normalizedSymbol === 'MIOTA') { return 'IOT'; }
         return normalizedSymbol;
     }
 
