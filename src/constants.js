@@ -14,3 +14,13 @@ export const FOREIGN_EXCHANGE_URL_DAY_AVERAGE = `${FOREIGN_EXCHANGE_URL_ROOT}`;
 export const SHEET_EXCHANGE_RATES = 'Exchange Rates';
 
 export const FIAT_CURRENCIES = ['USD', 'RON', 'EUR', 'GBP'];
+
+export const GOOGLE_FINANCE_CURRENCY_PAIRS = [
+    'BTC_USD',
+    'ETH_BTC',
+    'ETH_USD',
+    'RON_BTC',
+    'RON_USD',
+    'USD_BTC',
+    'USD_RON',
+];
